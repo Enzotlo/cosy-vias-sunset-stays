@@ -11,6 +11,12 @@ import {
   CarouselNext,
   CarouselPrevious,
 } from "@/components/ui/carousel";
+import {
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+} from "@/components/ui/dialog";
 
 const apartments = [
   {
@@ -54,6 +60,8 @@ const apartments = [
 const Appartements = () => {
   const [date, setDate] = useState<Date | undefined>(new Date());
   const [selectedApartment, setSelectedApartment] = useState<number | null>(null);
+  const [calendarOpen, setCalendarOpen] = useState(false);
+  const [selectedApartmentForCalendar, setSelectedApartmentForCalendar] = useState<number | null>(null);
   const navigate = useNavigate();
 
   const handleContact = (id: number) => {
@@ -64,8 +72,13 @@ const Appartements = () => {
     setSelectedApartment(id);
   };
 
+  const handleOpenCalendar = (id: number) => {
+    setSelectedApartmentForCalendar(id);
+    setCalendarOpen(true);
+  };
+
   return (
-    <div className="min-h-screen flex flex-col bg-gradient-to-br from-sunset-peach to-sunset-yellow">
+    <div className="min-h-screen flex flex-col bg-gradient-to-br from-sunset-rose via-sunset-peach to-sunset-yellow">
       <Navbar />
       
       <main className="flex-grow pt-24 pb-20">
@@ -111,6 +124,13 @@ const Appartements = () => {
                     <div className="space-y-4">
                       <p className="text-gray-700">{apt.fullDescription}</p>
                       <Button
+                        onClick={() => handleOpenCalendar(apt.id)}
+                        variant="outline"
+                        className="w-full border-sunset-gold text-sunset-gold hover:bg-sunset-gold hover:text-white mb-2"
+                      >
+                        Voir les disponibilités
+                      </Button>
+                      <Button
                         onClick={() => handleContact(apt.id)}
                         className="w-full bg-sunset-coral hover:bg-sunset-accent transition-colors"
                       >
@@ -134,6 +154,13 @@ const Appartements = () => {
                         Plus d'informations
                       </Button>
                       <Button
+                        onClick={() => handleOpenCalendar(apt.id)}
+                        variant="outline"
+                        className="w-full border-sunset-gold text-sunset-gold hover:bg-sunset-gold hover:text-white"
+                      >
+                        Voir les disponibilités
+                      </Button>
+                      <Button
                         onClick={() => handleContact(apt.id)}
                         className="w-full bg-sunset-coral hover:bg-sunset-accent transition-colors"
                       >
@@ -145,22 +172,26 @@ const Appartements = () => {
               </div>
             ))}
           </div>
-
-          <div className="mt-16 bg-white p-8 rounded-lg shadow-lg">
-            <h2 className="text-2xl font-bold text-sunset-dark mb-6">
-              Calendrier des disponibilités
-            </h2>
-            <div className="bg-white rounded-lg">
-              <Calendar
-                mode="single"
-                selected={date}
-                onSelect={setDate}
-                className="rounded-md border border-sunset-peach"
-              />
-            </div>
-          </div>
         </div>
       </main>
+
+      <Dialog open={calendarOpen} onOpenChange={setCalendarOpen}>
+        <DialogContent className="bg-white">
+          <DialogHeader>
+            <DialogTitle className="text-sunset-dark">
+              Calendrier des disponibilités
+            </DialogTitle>
+          </DialogHeader>
+          <div className="p-4">
+            <Calendar
+              mode="single"
+              selected={date}
+              onSelect={setDate}
+              className="rounded-md border border-sunset-peach"
+            />
+          </div>
+        </DialogContent>
+      </Dialog>
 
       <Footer />
     </div>
