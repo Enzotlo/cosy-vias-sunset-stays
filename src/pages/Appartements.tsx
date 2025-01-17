@@ -4,6 +4,13 @@ import { Button } from "@/components/ui/button";
 import { Calendar } from "@/components/ui/calendar";
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
+import {
+  Carousel,
+  CarouselContent,
+  CarouselItem,
+  CarouselNext,
+  CarouselPrevious,
+} from "@/components/ui/carousel";
 
 const apartments = [
   {
@@ -11,30 +18,50 @@ const apartments = [
     title: "Appartement Vue Mer",
     description: "Magnifique T2 avec vue panoramique sur la Méditerranée",
     price: "90€/nuit",
-    image: "bg-sunset-yellow",
+    images: [
+      "https://images.unsplash.com/photo-1502672260266-1c1ef2d93688",
+      "https://images.unsplash.com/photo-1616486029423-aaa4789e8c9a",
+      "https://images.unsplash.com/photo-1560448204-603b3fc33ddc",
+    ],
+    fullDescription: "Un appartement lumineux avec une vue imprenable sur la mer Méditerranée. Profitez d'un séjour confortable dans ce T2 entièrement équipé.",
   },
   {
     id: 2,
     title: "Studio Cosy",
     description: "Studio moderne et confortable, idéal pour un couple",
     price: "70€/nuit",
-    image: "bg-sunset-peach",
+    images: [
+      "https://images.unsplash.com/photo-1522708323590-d24dbb6b0267",
+      "https://images.unsplash.com/photo-1630699144867-37acec97df5a",
+      "https://images.unsplash.com/photo-1560185007-c5ca9d2c014d",
+    ],
+    fullDescription: "Studio rénové avec goût, parfait pour un couple. Cuisine équipée, salle de bain moderne et lit confortable.",
   },
   {
     id: 3,
     title: "T3 Familial",
     description: "Grand appartement parfait pour les familles",
     price: "120€/nuit",
-    image: "bg-sunset-orange",
+    images: [
+      "https://images.unsplash.com/photo-1484154218962-a197022b5858",
+      "https://images.unsplash.com/photo-1613545325278-f24b0cae1224",
+      "https://images.unsplash.com/photo-1613545325268-f24b0cae1224",
+    ],
+    fullDescription: "Spacieux T3 idéal pour les familles. Trois chambres, grand salon, cuisine équipée et deux salles de bain.",
   },
 ];
 
 const Appartements = () => {
   const [date, setDate] = useState<Date | undefined>(new Date());
+  const [selectedApartment, setSelectedApartment] = useState<number | null>(null);
   const navigate = useNavigate();
 
   const handleContact = (id: number) => {
     navigate("/contact", { state: { apartmentId: id } });
+  };
+
+  const handleMoreInfo = (id: number) => {
+    setSelectedApartment(id);
   };
 
   return (
@@ -53,7 +80,24 @@ const Appartements = () => {
                 key={apt.id}
                 className="bg-white rounded-lg shadow-lg overflow-hidden animate-fade-in"
               >
-                <div className={`${apt.image} h-48`} />
+                <Carousel className="w-full">
+                  <CarouselContent>
+                    {apt.images.map((image, index) => (
+                      <CarouselItem key={index}>
+                        <div className="h-48 w-full">
+                          <img
+                            src={image}
+                            alt={`${apt.title} - Vue ${index + 1}`}
+                            className="w-full h-full object-cover"
+                          />
+                        </div>
+                      </CarouselItem>
+                    ))}
+                  </CarouselContent>
+                  <CarouselPrevious />
+                  <CarouselNext />
+                </Carousel>
+
                 <div className="p-6">
                   <h3 className="text-xl font-bold text-sunset-dark mb-2">
                     {apt.title}
@@ -62,12 +106,41 @@ const Appartements = () => {
                   <p className="text-lg font-semibold text-sunset-accent mb-4">
                     {apt.price}
                   </p>
-                  <Button
-                    onClick={() => handleContact(apt.id)}
-                    className="w-full bg-sunset-accent hover:bg-sunset-dark transition-colors"
-                  >
-                    Nous contacter
-                  </Button>
+                  
+                  {selectedApartment === apt.id ? (
+                    <div className="space-y-4">
+                      <p className="text-gray-700">{apt.fullDescription}</p>
+                      <Button
+                        onClick={() => handleContact(apt.id)}
+                        className="w-full bg-sunset-accent hover:bg-sunset-dark transition-colors"
+                      >
+                        Nous contacter
+                      </Button>
+                      <Button
+                        variant="outline"
+                        onClick={() => setSelectedApartment(null)}
+                        className="w-full"
+                      >
+                        Retour
+                      </Button>
+                    </div>
+                  ) : (
+                    <div className="space-y-2">
+                      <Button
+                        onClick={() => handleMoreInfo(apt.id)}
+                        variant="outline"
+                        className="w-full mb-2"
+                      >
+                        Plus d'informations
+                      </Button>
+                      <Button
+                        onClick={() => handleContact(apt.id)}
+                        className="w-full bg-sunset-accent hover:bg-sunset-dark transition-colors"
+                      >
+                        Nous contacter
+                      </Button>
+                    </div>
+                  )}
                 </div>
               </div>
             ))}
